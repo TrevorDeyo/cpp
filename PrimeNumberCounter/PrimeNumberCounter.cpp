@@ -11,7 +11,6 @@ bool check_prime(int);
 void update_progress(int current, int total);
 
 int main() {
-    auto start = high_resolution_clock::now();
 
     int counter{};
     int totalNumbers{};
@@ -19,6 +18,8 @@ int main() {
 
     cout << "Enter the range you want to search for prime numbers (min 100): ";
     cin >> totalNumbers;
+
+    auto start = high_resolution_clock::now();
 
         for (int i = 0; i < totalNumbers; i++) {
             if (check_prime(i)) {
