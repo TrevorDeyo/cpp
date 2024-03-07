@@ -7,6 +7,8 @@
 using std::cout;
 using std::string;
 using std::to_string;
+using namespace std::literals::chrono_literals;
+
 
 // Define color escape codes
 #define RESET   "\033[0m"
@@ -20,7 +22,7 @@ using std::to_string;
 
 struct Starship {
     // Default target frame time (60 fps) 16.67ms per frame
-    std::chrono::nanoseconds targetFrameTime{ 16667000 }; 
+    std::chrono::nanoseconds targetFrameTime{ 16667000 };
 
     // external power
     bool externalPower{ false };
@@ -32,21 +34,33 @@ struct Starship {
     float startCapacitorsMaxCapacity{ 10000 };
 
     // Helium Tank
-    float heliumTank{ 0 };
     float heliumTankCollectionRate{ 1 };
-    bool heliumTankCryoCooler{ false };
+    float heliumTank{ 0 };
+    float heliumTankMaxCapacity{ 100000 };
+    bool heliumTankChiller { false };
 
     // Helium3 Tank
-    float helium3Tank{ 0 };
     float helium3TankCollectionRate{ 1 };
-    bool helium3TankCryoCooler{ false };
+    float helium3Tank{ 0 };
+    float helium3TankMaxCapacity{ 100000 };
+    bool helium3TankChiller{ false };
 
-    // Deuterium Tanks
-    float deuteriumTanksCollectionRate{ 1 };
+    // Deuterium Tank 1
+    float deuteriumTank1CollectionRate{ 1 };
     float deuteriumTank1{ 0 };
-    bool deuteriumTank1CryoCooler{ false };
+    float deuteriumTank1MaxCapacity{ 100000 };
+    bool deuteriumTank1Chiller{ false };
+
+    // Deuterium Tank 2
+    float deuteriumTank2CollectionRate{ 1 };
     float deuteriumTank2{ 0 };
-    bool deuteriumTank2CryoCooler{ false };
+    float deuteriumTank2MaxCapacity{ 100000 };
+    bool deuteriumTank2Chiller{ false };
+
+    // Fuel Collection System
+    bool fuelCollecters{ false };
+    float fuelTotal{ heliumTank + helium3Tank + deuteriumTank1 + deuteriumTank2 };
+    float fuelTotalCapacity{ heliumTankMaxCapacity + helium3TankMaxCapacity + deuteriumTank1MaxCapacity + deuteriumTank2MaxCapacity };
 
     // Fusion Reactor
     bool magneticCoils{ false };
@@ -98,14 +112,26 @@ void menu(const Starship& starship) {
     }
 
     // Start Capacitors System
-    string progbar = progressBar(starship.startCapacitorsCharge, starship.startCapacitorsMaxCapacity);
+    string capProgBar = progressBar(starship.startCapacitorsCharge, starship.startCapacitorsMaxCapacity);
     if (starship.startCapacitors) {
-        output += GREEN + string("[2] Start Capacitors [ONLINE] ") + CYAN + progbar + string("Charge: ") + std::to_string(static_cast<int>(starship.startCapacitorsCharge)) +
+        output += GREEN + string("[2] Start Capacitors [ONLINE] ") + CYAN + capProgBar + "Charge: " + std::to_string(static_cast<int>(starship.startCapacitorsCharge)) +
             "/" + std::to_string(static_cast<int>(starship.startCapacitorsMaxCapacity)) + " \n";
     }
     else {
-        output += RED + string("[2] Start Capacitors [OFFLINE] ") + CYAN + progbar + "Charge: " + std::to_string(static_cast<int>(starship.startCapacitorsCharge)) +
+        output += RED + string("[2] Start Capacitors [OFFLINE] ") + CYAN + capProgBar + "Charge: " + std::to_string(static_cast<int>(starship.startCapacitorsCharge)) +
             "/" + std::to_string(static_cast<int>(starship.startCapacitorsMaxCapacity)) + " \n";
+    }
+
+    // Gas Collection System
+
+    string fuelSummaryProgBar = progressBar(starship.fuelTotal, starship.fuelTotalCapacity);
+    string heliumProgBar = progressBar(starship.heliumTank, starship.heliumTankMaxCapacity);
+    string helium3ProgBar = progressBar(starship.helium3Tank, starship.helium3TankMaxCapacity);
+    string deuteriumTank1ProgBar = progressBar(starship.deuteriumTank1, starship.deuteriumTank1MaxCapacity);
+    string deuteriumTank2ProgBar = progressBar(starship.deuteriumTank2, starship.deuteriumTank2MaxCapacity);
+
+    if (starship.fuelCollecters) {
+        output += GREEN + string("[3] Fuel Collection Systems [ONLINE] ") + CYAN + fuelSummaryProgBar + string
     }
 
     // Add more systems here
